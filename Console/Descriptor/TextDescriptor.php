@@ -190,8 +190,11 @@ class TextDescriptor extends Descriptor
         }
 
         $options['output']->title($title);
-
-        $serviceIds = isset($options['tag']) && $options['tag'] ? array_keys($builder->findTaggedServiceIds($options['tag'])) : $builder->getServiceIds();
+        if (isset($options['tag']) && $options['tag']) {
+            $serviceIds = array_keys($this->sortTaggedServiceByPriority($builder->findTaggedServiceIds($options['tag'])));
+        } else {
+            $serviceIds = $this->sortServiceIds($builder->getServiceIds());
+        }
         $maxTags = [];
 
         if (isset($options['filter'])) {
@@ -230,7 +233,7 @@ class TextDescriptor extends Descriptor
         $tableHeaders = array_merge(['Service ID'], $tagsNames, ['Class name']);
         $tableRows = [];
         $rawOutput = isset($options['raw_text']) && $options['raw_text'];
-        foreach ($this->sortServiceIds($serviceIds) as $serviceId) {
+        foreach ($serviceIds as $serviceId) {
             $definition = $this->resolveServiceDefinition($builder, $serviceId);
 
             $styledServiceId = $rawOutput ? $serviceId : sprintf('<fg=cyan>%s</fg=cyan>', OutputFormatter::escape($serviceId));
