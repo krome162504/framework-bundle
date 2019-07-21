@@ -295,6 +295,21 @@ abstract class Descriptor implements DescriptorInterface
     }
 
     /**
+     * Returns services with tags sorted by priority.
+     * Default priority value is 0
+     *
+     * @return array An array of tags
+     */
+    public function sortTaggedServiceByPriority($services)
+    {
+        uasort($services, function ($a, $b) {
+            return ($b[0]['priority'] ?? 0) <=> ($a[0]['priority'] ?? 0);
+        });
+
+        return $services;
+    }
+
+    /**
      * Gets class description from a docblock.
      */
     public static function getClassDescription(string $class, string &$resolvedClass = null): string
